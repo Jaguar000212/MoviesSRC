@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from imdb import Cinemagoer
 
+
 class Interface(ctk.CTk):
     def __init__(self):
         super().__init__()

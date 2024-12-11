@@ -4,11 +4,13 @@ from requests import get, Response, exceptions
 
 url: str = "https://vidsrc.xyz/embed/"
 
+
 def clearScreen() -> None:
     if name == "nt":
         system("cls")
     else:
         system("clear")
+
 
 def ifConnected() -> bool:
     try:
@@ -17,16 +19,19 @@ def ifConnected() -> bool:
     except exceptions.ConnectionError:
         return False
 
+
 def get_url(path: str) -> str:
     global url
     _url: str = f"{url}{path}"
     return _url
+
 
 def checkURL(vid_url: str) -> bool:
     req: Response = get(vid_url)
     if req.status_code == 404:
         return False
     return True
+
 
 def getResults(query: str) -> list[Movie]:
     if ifConnected():
@@ -36,6 +41,7 @@ def getResults(query: str) -> list[Movie]:
         print("No internet connection. Exiting...")
         exit(-2)
 
+
 def printResults(results: list[Movie]) -> None:
     if len(results) == 0:
         print("No results found!")
@@ -44,9 +50,10 @@ def printResults(results: list[Movie]) -> None:
         print("Results:")
         for i, result in enumerate(results):
             try:
-                print(f"{i+1}. {result['title']} ({result['year']})")
+                print(f"{i + 1}. {result['title']} ({result['year']})")
             except KeyError:
-                print(f"{i+1}. {result['title']}")
+                print(f"{i + 1}. {result['title']}")
+
 
 def welcome() -> None:
     clearScreen()
@@ -56,6 +63,7 @@ def welcome() -> None:
     print("You can search for movies and series and get the URL to watch them online")
     print("Let's get started!")
     selectType()
+
 
 def selectType() -> None:
     print("Select the type of search you want to perform:")
@@ -79,6 +87,7 @@ def selectType() -> None:
         print("Invalid choice!")
         selectType()
 
+
 def searchMovie() -> None:
     query: str = input("Enter the name of the movie: ")
     results: list[Movie] = getResults(query)
@@ -92,7 +101,8 @@ def searchMovie() -> None:
                 choice = None
         except ValueError:
             print("Invalid choice!")
-    get_url(f"movie/tt{results[choice-1].getID()}")
+    finalize(get_url(f"movie/tt{results[choice - 1].getID()}"))
+
 
 def searchSeries() -> None:
     query: str = input("Enter the name of the series: ")
@@ -107,13 +117,14 @@ def searchSeries() -> None:
                 choice = None
         except ValueError:
             print("Invalid choice!")
-    get_url(f"tv/tt{results[choice - 1].getID()}")
+    finalize(get_url(f"tv/tt{results[choice - 1].getID()}"))
+
 
 def finalize(vid_url) -> None:
     if checkURL(vid_url):
         print(f"URL: {vid_url}")
     else:
-        print("Movie is not available at the moment. May get updated in future, thank you.")
+        print("Movie is not available at the moment or it might be of different type, thank you.")
     retry: str = input("Do you want to search again? (y/n): ")
     if retry == "y":
         clearScreen()
@@ -121,6 +132,7 @@ def finalize(vid_url) -> None:
     else:
         print("Exiting...")
         exit()
+
 
 if __name__ == "__main__":
     welcome()
