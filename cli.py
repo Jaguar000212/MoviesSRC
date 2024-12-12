@@ -3,6 +3,7 @@ from os import system, name
 from requests import get, Response, exceptions
 
 url: str = "https://vidsrc.xyz/embed/"
+mirror_url = "https://vidlink.pro/"
 
 
 def clearScreen() -> None:
@@ -26,11 +27,17 @@ def get_url(path: str) -> str:
     return _url
 
 
+def get_mirror(path: str) -> str:
+    global mirror_url
+    _mirror_url: str = f"{mirror_url}{path}"
+    return _mirror_url
+
+
 def checkURL(vid_url: str) -> bool:
     req: Response = get(vid_url)
-    if req.status_code == 404:
-        return False
-    return True
+    if req.status_code == 200:
+        return True
+    return False
 
 
 def getResults(query: str) -> list[Movie]:
@@ -101,7 +108,7 @@ def searchMovie() -> None:
                 choice = None
         except ValueError:
             print("Invalid choice!")
-    finalize(get_url(f"movie/tt{results[choice - 1].getID()}"))
+    finalize(get_url(f"movie/tt{results[choice - 1].getID()}"), get_mirror(f"movie/tt{results[choice - 1].getID()}"))
 
 
 def searchSeries() -> None:
@@ -120,11 +127,14 @@ def searchSeries() -> None:
     finalize(get_url(f"tv/tt{results[choice - 1].getID()}"))
 
 
-def finalize(vid_url) -> None:
+def finalize(vid_url: str, mirror_vid_url: str = None) -> None:
     if checkURL(vid_url):
         print(f"URL: {vid_url}")
     else:
         print("Movie is not available at the moment or it might be of different type, thank you.")
+    if mirror_vid_url is not None:
+        if checkURL(mirror_vid_url):
+            print(f"Mirror: {mirror_vid_url}")
     retry: str = input("Do you want to search again? (y/n): ")
     if retry == "y":
         clearScreen()
